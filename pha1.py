@@ -9,7 +9,7 @@ targets = [] #list of targets
 tar = [] #list of targets whose disks do not intersect, denote T' in paper
 ists = [] #list of intersections between disks
 F = [] #sensors set
-for i in range(0,14): #randomly generate 12 targets
+for i in range(0,17): #randomly generate 12 targets
     targetsX.append(random.uniform(1,9))
     targetsY.append(random.uniform(1,9))
     targets.append([targetsX[i], targetsY[i]])
@@ -78,7 +78,6 @@ while sum(sum(matrix,[])) != 0:
         if math.dist(F[maxLfIndex], targets[i]) <= rs +0.0001:
             for j in range(len(F)):
                 matrix[j][i] = 0
-print(SSCAT)
 
 Sx = []
 Sy = []

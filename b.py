@@ -1,11 +1,39 @@
-def findMaxLf():
-    Lflist = [0]*len(matrix)
-    for i in range(len(matrix)):
-        Lflist[i] = sum(matrix[i])
-    return(Lflist.index(max(Lflist)))
+class Graph_struct:
+   def __init__(self, V):
+      self.V = V
+      self.adj = [[] for i in range(V)]
 
-matrix = [[2,3,4], [3,4,5], [1,2,1], [4,5,6]]
+   def DFS_Utililty(self, temp, v, visited):
 
-a = findMaxLf()
-print(a)
-print(sum(sum(matrix,[])))
+      visited[v] = True
+
+      temp.append(v)
+
+      for i in self.adj[v]:
+         if visited[i] == False:
+            temp = self.DFS_Utililty(temp, i, visited)
+      return temp
+
+   def add_edge(self, v, w):
+      self.adj[v].append(w)
+      self.adj[w].append(v)
+
+   def connected_components(self):
+      visited = []
+      conn_compnent = []
+      for i in range(self.V):
+         visited.append(False)
+      for v in range(self.V):
+         if visited[v] == False:
+            temp = []
+            conn_compnent.append(self.DFS_Utililty(temp, v, visited))
+      return conn_compnent
+
+DFSG1 = Graph_struct(5)
+DFSG1.add_edge(1, 0)
+DFSG1.add_edge(2, 0)
+DFSG1.add_edge(3, 4)
+
+conn_comp = DFSG1.connected_components()
+print("The connected components are :")
+print(conn_comp)
