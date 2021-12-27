@@ -87,18 +87,17 @@ for i in range(len(SSCAT)):
     Sy.append(SSCAT[i][1])
 
 
-fig1, ax = plt.subplots()
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 10)
-ax.set_box_aspect(1)
-plt.plot(targetsX, targetsY, '*', color = 'red', markersize=12)
-plt.plot(Fx, Fy, 'o', color = 'blue', markersize=4)
-plt.plot(Sx, Sy, 'o', color = 'black', markersize=4)
-# for i in range(len(targets)):
-#     ax.add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
-for i in range(len(SSCAT)):
-    ax.add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='green', alpha = 0.2))
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.show()
+fig, axs = plt.subplots(2,2)
+axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10)
+axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10)
+axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1)
+axs[0,0].plot(targetsX, targetsY, '*', color = 'red', markersize=7),axs[0,1].plot(targetsX, targetsY, '*', color = 'red', markersize=7),axs[1,0].plot(targetsX, targetsY, '*', color = 'red', markersize=7),axs[1,1].plot(targetsX, targetsY, '*', color = 'red', markersize=7)
 
+axs[1,0].plot(Fx, Fy, 'o', color = 'blue', markersize=2)
+for i in range(len(targets)):
+    axs[0,1].add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
+    axs[1,0].add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
+axs[1,1].plot(Sx, Sy, 'o', color = 'black', markersize=2)
+for i in range(len(SSCAT)):
+    axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='green', alpha = 0.2))
+plt.show()
