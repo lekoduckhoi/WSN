@@ -9,13 +9,12 @@ targets = [] #list of targets
 tar = [] #list of targets whose disks do not intersect, denote T' in paper
 ists = [] #list of intersections between disks
 F = [] #sensors set
-for i in range(0,18): #randomly generate 12 targets
-    targetsX.append(random.randint(1,9))
-    targetsY.append(random.randint(1,9))
+for i in range(0,14): #randomly generate 12 targets
+    targetsX.append(random.uniform(1,9))
+    targetsY.append(random.uniform(1,9))
     targets.append([targetsX[i], targetsY[i]])
 
 def get_intersections(x0, y0, x1, y1): # get 2 intersections of disks
-    
     d=math.dist([x0, y0], [x1, y1])
     a=(rs**2-rs**2+d**2)/(2*d)
     h=math.sqrt(rs**2-a**2)
@@ -29,8 +28,8 @@ def get_intersections(x0, y0, x1, y1): # get 2 intersections of disks
     return ([x3, y3], [x4, y4])
 hasIntersected = [0]*len(targets)
 
-for i in range(0,17): 
-    for j in range(i+1,18):
+for i in range(len(targets)): 
+    for j in range(i+1,len(targets)):
         if math.dist(targets[i], targets[j]) == 2:
             ists.append([(targetsX[i] + targetsX[j])/2, (targetsY[i] + targetsY[j])/2])
             hasIntersected[i] = 1
@@ -40,7 +39,6 @@ for i in range(0,17):
             ists.append(get_intersections(targetsX[i], targetsY[i], targetsX[j], targetsY[j])[1])
             hasIntersected[i] = 1
             hasIntersected[j] = 1
-print(hasIntersected)
 istsX = []
 istsY = []
 for i in range(len(ists)):
@@ -56,6 +54,18 @@ for i in range(len(F)):
     Fx.append(F[i][0])
     Fy.append(F[i][1])
 
+#finding SSCAT from F
+matrix = []
+for i in range(len(F)):
+    listCovered = []
+    for j in range(len(targets)):
+        if math.dist(F[i], targets[j]) <= rs +0.0001:
+            listCovered.append(1)
+        else:
+            listCovered.append(0)
+    matrix.append(listCovered)
+remainPosition = [1]*len(F)
+#def findMaxLf():
 
 
 
@@ -66,7 +76,7 @@ ax.set_ylim(0, 10)
 ax.set_box_aspect(1)
 plt.plot(targetsX, targetsY, '*', color = 'red', markersize=12)
 plt.plot(Fx, Fy, 'o', color = 'blue', markersize=4)
-for i in range(0,18):
+for i in range(len(targets)):
     ax.add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
 plt.xlabel('X-axis')
 plt.ylabel('Y-axis')
