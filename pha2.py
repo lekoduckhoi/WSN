@@ -50,9 +50,6 @@ for i in range(len(V1)):
 
 
 conn_comp = DFSG1.connected_components()
-print("The connected components are :")
-print(V1)
-print(conn_comp)
 
 #matrixEXY[i][j] = [a,b, d] => distant between 2 connected component index i and j
 # is d = distant of point index a in i and b in j
@@ -75,7 +72,6 @@ for i in range(len(conn_comp)):
         hangicotj.append(min_distance)
         hangi.append(hangicotj)
     matrixEXY.append(hangi)
-print(matrixEXY)
 
 class GraphWeight:
     def __init__(self, vertices):
@@ -131,8 +127,29 @@ for i in range(len(conn_comp)-1):
         G2.add_edge(i,j, matrixEXY[i][j][2])
 
 MST = G2.kruskal_algo()
-print(MST)
 
+relayNodes = []
+def fillRelayNodes(i,j): #add relay nodes to line V1[i] V1[j]
+    #vector V1[i] to V[j] = (a,b)
+    a = V1[j][0] - V1[i][0]
+    b = V1[j][1] - V1[i][1]
+    c = math.sqrt(a**2 + b**2)
+    a = a/c
+    b = b/c
+    startPoint = [V1[i][0], V1[i][1]]
+    while math.dist(startPoint, V1[j]) > rc:
+        relayNodes.append([startPoint[0] + a, startPoint[1] + b])
+        startPoint = [startPoint[0] + a, startPoint[1] + b]
+for mst in MST:
+    #2 components mst[0], mst[1]
+    #matrixEXY[mst[0]][mst[1]][0]
+    fillRelayNodes(matrixEXY[mst[0]][mst[1]][0], matrixEXY[mst[0]][mst[1]][1])
+
+relX = []
+relY = []
+for i in range(len(relayNodes)):
+    relX.append(relayNodes[i][0])
+    relY.append(relayNodes[i][1])
 
 Sx = []
 Sy = []
@@ -145,19 +162,23 @@ axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1
 axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10)
 axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1)
 axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8)
-axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1)
-axs[0,1].plot(Sx, Sy, 'o', color = 'black', markersize=6, alpha = 0.4),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=6, alpha = 0.4)
+axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,1].plot(Sx, Sy, 'o', color = 'black', markersize=1)
+axs[1,1].plot(relX, relY, 'o', color = 'green', markersize=1)
+axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,0].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
 for i in range(len(SSCAT)):
-    axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 2, color='orange', alpha = 0.5))
+    axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+    axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
 for i in range(len(V1)-1):
     for j in range(i+1, len(V1)):
         if G1[i][j] == 1:
-            axs[0,1].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='grey')
-            axs[1,0].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='grey')
+            axs[0,1].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
+            axs[1,0].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
+            
 for i in range(len(MST)):
     matrixEXY[MST[i][0]][MST[i][1]][0]
     matrixEXY[MST[i][0]][MST[i][1]][1]
     axs[1,0].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
-
+for i in range(len(relayNodes)):
+    axs[1,1].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
 
 plt.show()
