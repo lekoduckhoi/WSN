@@ -56,6 +56,7 @@ for i in range(len(F)):
 
 #finding SSCAT from F
 matrix = []
+SSCAT = []
 for i in range(len(F)):
     listCovered = []
     for j in range(len(targets)):
@@ -64,10 +65,26 @@ for i in range(len(F)):
         else:
             listCovered.append(0)
     matrix.append(listCovered)
-remainPosition = [1]*len(F)
-#def findMaxLf():
+def findMaxLfIndex():
+    Lflist = [0]*len(F)
+    for i in range(len(F)):
+        Lflist[i] = sum(matrix[i])
+    return(Lflist.index(max(Lflist)))
 
+while sum(sum(matrix,[])) != 0:
+    maxLfIndex = findMaxLfIndex()
+    SSCAT.append(F[maxLfIndex])
+    for i in range(len(targets)):
+        if math.dist(F[maxLfIndex], targets[i]) <= rs +0.0001:
+            for j in range(len(F)):
+                matrix[j][i] = 0
+print(SSCAT)
 
+Sx = []
+Sy = []
+for i in range(len(SSCAT)):
+    Sx.append(SSCAT[i][0])
+    Sy.append(SSCAT[i][1])
 
 
 fig1, ax = plt.subplots()
@@ -76,8 +93,11 @@ ax.set_ylim(0, 10)
 ax.set_box_aspect(1)
 plt.plot(targetsX, targetsY, '*', color = 'red', markersize=12)
 plt.plot(Fx, Fy, 'o', color = 'blue', markersize=4)
-for i in range(len(targets)):
-    ax.add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
+plt.plot(Sx, Sy, 'o', color = 'black', markersize=4)
+# for i in range(len(targets)):
+#     ax.add_patch(plt.Circle((targetsX[i], targetsY[i]), 1, color='blue', alpha = 0.2))
+for i in range(len(SSCAT)):
+    ax.add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='green', alpha = 0.2))
 plt.xlabel('X-axis')
 plt.ylabel('Y-axis')
 plt.show()
