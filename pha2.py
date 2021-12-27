@@ -145,6 +145,46 @@ for mst in MST:
     #matrixEXY[mst[0]][mst[1]][0]
     fillRelayNodes(matrixEXY[mst[0]][mst[1]][0], matrixEXY[mst[0]][mst[1]][1])
 
+#phan 2 Ensuring fault-tolerance:
+
+V2 = V1.copy()
+for i in range(len(relayNodes)):
+    V2.append(relayNodes[i])
+# G3 = Graph_struct(len(V3))
+# for i in range(len(V3)-1):
+#     for j in range(i+1, len(V3)):
+#         if math.dist(V3[i], V3[j]) <= rc:
+#             G3.add_edge(i,j)
+
+# conn_comp3 = G3.connected_components()
+# print(conn_comp3)
+def isCutVertex(index):
+    V2_temp = V2.copy()
+    del V2_temp[index]
+    GG = Graph_struct(len(V2_temp))
+    for i in range(len(V2_temp)-1):
+        for j in range(i+1, len(V2_temp)):
+            if math.dist(V2_temp[i], V2_temp[j]) <= rc:
+                GG.add_edge(i,j)
+    conn_comp1 = GG.connected_components()
+    if len(conn_comp1) == 1:
+        return False
+    else:
+        return True
+V3 = []
+for i in range(len(V2)):
+    if isCutVertex(i) == False:
+        V3.append(V2[i])
+
+V3x = []
+V3y = []
+
+for i in range(len(V3)):
+    V3x.append(V3[i][0])
+    V3y.append(V3[i][1])
+
+
+#ve hinh
 relX = []
 relY = []
 for i in range(len(relayNodes)):
@@ -157,28 +197,33 @@ for i in range(len(SSCAT)):
     Sx.append(SSCAT[i][0])
     Sy.append(SSCAT[i][1])
 
-fig, axs = plt.subplots(2,2)
-axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10)
-axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10)
-axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1)
-axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8)
-axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,1].plot(Sx, Sy, 'o', color = 'black', markersize=1)
-axs[1,1].plot(relX, relY, 'o', color = 'green', markersize=1)
-axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,0].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
+fig, axs = plt.subplots(2,3)
+axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10)
+axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10)
+axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1)
+axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8)
+axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=1)
+axs[1,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
+axs[0,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
+
+axs[1,1].plot(V3x, V3y, 'o', color = 'black', markersize=1)
+
+axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1)
+axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
 for i in range(len(SSCAT)):
     axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
-    axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+    axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
 for i in range(len(V1)-1):
     for j in range(i+1, len(V1)):
         if G1[i][j] == 1:
             axs[0,1].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
-            axs[1,0].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
+            axs[0,2].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
             
 for i in range(len(MST)):
     matrixEXY[MST[i][0]][MST[i][1]][0]
     matrixEXY[MST[i][0]][MST[i][1]][1]
-    axs[1,0].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
+    axs[0,2].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
 for i in range(len(relayNodes)):
-    axs[1,1].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
+    axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
 
 plt.show()
