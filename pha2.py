@@ -138,8 +138,8 @@ def fillRelayNodes(i,j): #add relay nodes to line V1[i] V1[j]
     b = b/c
     startPoint = [V1[i][0], V1[i][1]]
     while math.dist(startPoint, V1[j]) > rc:
-        relayNodes.append([startPoint[0] + a, startPoint[1] + b])
-        startPoint = [startPoint[0] + a, startPoint[1] + b]
+        relayNodes.append([startPoint[0] + a*0.9, startPoint[1] + b*0.9])
+        startPoint = [startPoint[0] + a*0.9, startPoint[1] + b*0.9]
 for mst in MST:
     #2 components mst[0], mst[1]
     #matrixEXY[mst[0]][mst[1]][0]
@@ -150,14 +150,7 @@ for mst in MST:
 V2 = V1.copy()
 for i in range(len(relayNodes)):
     V2.append(relayNodes[i])
-# G3 = Graph_struct(len(V3))
-# for i in range(len(V3)-1):
-#     for j in range(i+1, len(V3)):
-#         if math.dist(V3[i], V3[j]) <= rc:
-#             G3.add_edge(i,j)
 
-# conn_comp3 = G3.connected_components()
-# print(conn_comp3)
 def isCutVertex(index):
     V2_temp = V2.copy()
     del V2_temp[index]
@@ -175,7 +168,49 @@ V3 = []
 for i in range(len(V2)):
     if isCutVertex(i) == False:
         V3.append(V2[i])
+G3=[]
+DFSG3 = Graph_struct(len(V3))
+for i in range(len(V3)):
+    hangi = []
+    for j in range(len(V3)):
+        if math.dist(V3[i], V3[j]) <= rc:
+            DFSG3.add_edge(i, j)
+            hangi.append(1)
+        else:
+            hangi.append(0)
+    G3.append(hangi)
 
+conn_comp3 = DFSG3.connected_components()
+print(conn_comp3)
+
+matrixEXY2 = [] 
+for i in range(len(conn_comp3)):
+    hangi = []
+    for j in range(len(conn_comp3)):
+        hangicotj = []
+        pointOfi = 0
+        pointOfj = 0
+        min_distance = 100
+        for a in range(len(conn_comp3[i])):
+            for b in range(len(conn_comp3[j])):
+                if math.dist(V3[conn_comp3[i][a]], V3[conn_comp3[j][b]]) <= min_distance:
+                    pointOfi = conn_comp3[i][a]
+                    pointOfj = conn_comp3[j][b]
+                    min_distance = math.dist(V3[conn_comp3[i][a]], V3[conn_comp3[j][b]])
+        hangicotj.append(pointOfi)
+        hangicotj.append(pointOfj)
+        hangicotj.append(min_distance)
+        hangi.append(hangicotj)
+    matrixEXY2.append(hangi)
+
+G4 = GraphWeight(len(conn_comp3))
+for i in range(len(conn_comp3)-1):
+    for j in range(i+1, len(conn_comp3)):
+        G4.add_edge(i,j, matrixEXY2[i][j][2])
+
+MST2 = G2.kruskal_algo()
+
+#ve hinh
 V3x = []
 V3y = []
 
@@ -183,8 +218,6 @@ for i in range(len(V3)):
     V3x.append(V3[i][0])
     V3y.append(V3[i][1])
 
-
-#ve hinh
 relX = []
 relY = []
 for i in range(len(relayNodes)):
@@ -197,16 +230,16 @@ for i in range(len(SSCAT)):
     Sx.append(SSCAT[i][0])
     Sy.append(SSCAT[i][1])
 
-fig, axs = plt.subplots(2,3)
-axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10)
-axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10)
-axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1)
-axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8)
+fig, axs = plt.subplots(3,3)
+axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10),axs[2,0].set_xlim(0,10),axs[2,1].set_xlim(0,10),axs[2,2].set_xlim(0,10)
+axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10),axs[2,0].set_ylim(0,10),axs[2,1].set_ylim(0,10),axs[2,2].set_ylim(0,10)
+axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
+axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,2].plot([5],[5], '^', color = 'red', markersize = 8)
 axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=1)
 axs[1,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
 axs[0,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
 
-axs[1,1].plot(V3x, V3y, 'o', color = 'black', markersize=1)
+axs[1,1].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
 
 axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1)
 axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
@@ -218,7 +251,11 @@ for i in range(len(V1)-1):
         if G1[i][j] == 1:
             axs[0,1].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
             axs[0,2].plot([V1[i][0], V1[j][0],], [V1[i][1], V1[j][1]], color='purple')
-            
+for i in range(len(V3)-1):
+    for j in range(i+1, len(V3)):
+        if G3[i][j] == 1:
+            axs[1,1].plot([V3[i][0], V3[j][0],], [V3[i][1], V3[j][1]], color='purple')
+            axs[1,2].plot([V3[i][0], V3[j][0],], [V3[i][1], V3[j][1]], color='purple')    
 for i in range(len(MST)):
     matrixEXY[MST[i][0]][MST[i][1]][0]
     matrixEXY[MST[i][0]][MST[i][1]][1]
