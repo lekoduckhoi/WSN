@@ -1,71 +1,117 @@
-# Kruskal's algorithm in Python
+
+from collections import defaultdict
+
+#This class represents an undirected graph using adjacency list representation
+class Graph:
+
+	def __init__(self,vertices):
+		self.V= vertices #No. of vertices
+		self.graph = defaultdict(list) # default dictionary to store graph
+		self.Time = 0
+
+	# function to add an edge to graph
+	def addEdge(self,u,v):
+		self.graph[u].append(v)
+		self.graph[v].append(u)
+
+	def isBCUtil(self,u, visited, parent, low, disc):
+
+		#Count of children in current node
+		children =0
+
+		# Mark the current node as visited and print it
+		visited[u]= True
+
+		# Initialize discovery time and low value
+		disc[u] = self.Time
+		low[u] = self.Time
+		self.Time += 1
+
+		#Recur for all the vertices adjacent to this vertex
+		for v in self.graph[u]:
+			# If v is not visited yet, then make it a child of u
+			# in DFS tree and recur for it
+			if visited[v] == False :
+				parent[v] = u
+				children += 1
+				if self.isBCUtil(v, visited, parent, low, disc):
+					return True
+
+				# Check if the subtree rooted with v has a connection to
+				# one of the ancestors of u
+				low[u] = min(low[u], low[v])
+
+				# u is an articulation point in following cases
+				# (1) u is root of DFS tree and has two or more children.
+				if parent[u] == -1 and children > 1:
+					return True
+
+				#(2) If u is not root and low value of one of its child is more
+				# than discovery value of u.
+				if parent[u] != -1 and low[v] >= disc[u]:
+					return True
+					
+			elif v != parent[u]: # Update low value of u for parent function calls.
+				low[u] = min(low[u], disc[v])
+
+		return False
 
 
-class GraphWeight:
-    def __init__(self, vertices):
-        self.V = vertices
-        self.graph = []
+	# The main function that returns true if graph is Biconnected,
+	# otherwise false. It uses recursive function isBCUtil()
+	def isBC(self):
 
-    def add_edge(self, u, v, w):
-        self.graph.append([u, v, w])
+		# Mark all the vertices as not visited and Initialize parent and visited,
+		# and ap(articulation point) arrays
+		visited = [False] * (self.V)
+		disc = [float("Inf")] * (self.V)
+		low = [float("Inf")] * (self.V)
+		parent = [-1] * (self.V)
+	
 
-    # Search function
+		# Call the recursive helper function to find if there is an
+		# articulation points in given graph. We do DFS traversal starting
+		# from vertex 0
+		if self.isBCUtil(0, visited, parent, low, disc):
+			return False
 
-    def find(self, parent, i):
-        if parent[i] == i:
-            return i
-        return self.find(parent, parent[i])
+		if any(i == False for i in visited):
+			return False
+		
+		return True
 
-    def apply_union(self, parent, rank, x, y):
-        xroot = self.find(parent, x)
-        yroot = self.find(parent, y)
-        if rank[xroot] < rank[yroot]:
-            parent[xroot] = yroot
-        elif rank[xroot] > rank[yroot]:
-            parent[yroot] = xroot
-        else:
-            parent[yroot] = xroot
-            rank[xroot] += 1
+# Create a graph given in the above diagram
+g1 = Graph(2)
+g1.addEdge(0, 1)
+print("Yes") if g1.isBC() else "No"
 
-    #  Applying Kruskal algorithm
-    def kruskal_algo(self):
-        result = []
-        i, e = 0, 0
-        self.graph = sorted(self.graph, key=lambda item: item[2])
-        parent = []
-        rank = []
-        for node in range(self.V):
-            parent.append(node)
-            rank.append(0)
-        while e < self.V - 1:
-            u, v, w = self.graph[i]
-            i = i + 1
-            x = self.find(parent, u)
-            y = self.find(parent, v)
-            if x != y:
-                e = e + 1
-                result.append([u, v, w])
-                self.apply_union(parent, rank, x, y)
-        for u, v, weight in result:
-            print("%d - %d: %d" % (u, v, weight))
-            
-        return result
+g2 = Graph(5)
+g2.addEdge(1, 0)
+g2.addEdge(0, 2)
+g2.addEdge(2, 1)
+g2.addEdge(0, 3)
+g2.addEdge(3, 4)
+g2.addEdge(2, 4)
+print("Yes") if g2.isBC() else "No"
+
+g3 = Graph(3)
+g3.addEdge(0, 1)
+g3.addEdge(1, 2)
+print("Yes") if g3.isBC() else "No"
 
 
-g = GraphWeight(6)
-g.add_edge(0, 1, 4)
-g.add_edge(0, 2, 4)
-g.add_edge(1, 2, 2)
-g.add_edge(1, 0, 4)
-g.add_edge(2, 0, 4)
-g.add_edge(2, 1, 2)
-g.add_edge(2, 3, 3)
-g.add_edge(2, 5, 2)
-g.add_edge(2, 4, 4)
-g.add_edge(3, 2, 3)
-g.add_edge(3, 4, 3)
-g.add_edge(4, 2, 4)
-g.add_edge(4, 3, 3)
-g.add_edge(5, 2, 2)
-g.add_edge(5, 4, 3)
-g.kruskal_algo()
+g4 = Graph (5)
+g4.addEdge(1, 0)
+g4.addEdge(0, 2)
+g4.addEdge(2, 1)
+g4.addEdge(0, 3)
+g4.addEdge(3, 4)
+print("Yes") if g4.isBC() else "No"
+
+g5 = Graph(3)
+g5.addEdge(0, 1)
+g5.addEdge(1, 2)
+g5.addEdge(2, 0)
+print("Yes") if g5.isBC() else "No"
+
+#This code is contributed by Neelam Yadav

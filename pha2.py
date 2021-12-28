@@ -1,12 +1,88 @@
 import pha1
 import math 
 import matplotlib.pyplot as plt
+from collections import defaultdict
 SSCAT = pha1.SSCAT.copy()
 rc = 2 #communication radius
 V1 = SSCAT.copy()
 V1.append([5,5]) #add base station 
 G1 = []
+class Graph:
+	def __init__(self,vertices):
+		self.V= vertices #No. of vertices
+		self.graph = defaultdict(list) # default dictionary to store graph
+		self.Time = 0
 
+	# function to add an edge to graph
+	def addEdge(self,u,v):
+		self.graph[u].append(v)
+		self.graph[v].append(u)
+
+	def isBCUtil(self,u, visited, parent, low, disc):
+
+		#Count of children in current node
+		children =0
+
+		# Mark the current node as visited and print it
+		visited[u]= True
+
+		# Initialize discovery time and low value
+		disc[u] = self.Time
+		low[u] = self.Time
+		self.Time += 1
+
+		#Recur for all the vertices adjacent to this vertex
+		for v in self.graph[u]:
+			# If v is not visited yet, then make it a child of u
+			# in DFS tree and recur for it
+			if visited[v] == False :
+				parent[v] = u
+				children += 1
+				if self.isBCUtil(v, visited, parent, low, disc):
+					return True
+
+				# Check if the subtree rooted with v has a connection to
+				# one of the ancestors of u
+				low[u] = min(low[u], low[v])
+
+				# u is an articulation point in following cases
+				# (1) u is root of DFS tree and has two or more children.
+				if parent[u] == -1 and children > 1:
+					return True
+
+				#(2) If u is not root and low value of one of its child is more
+				# than discovery value of u.
+				if parent[u] != -1 and low[v] >= disc[u]:
+					return True
+					
+			elif v != parent[u]: # Update low value of u for parent function calls.
+				low[u] = min(low[u], disc[v])
+
+		return False
+
+
+	# The main function that returns true if graph is Biconnected,
+	# otherwise false. It uses recursive function isBCUtil()
+	def isBC(self):
+
+		# Mark all the vertices as not visited and Initialize parent and visited,
+		# and ap(articulation point) arrays
+		visited = [False] * (self.V)
+		disc = [float("Inf")] * (self.V)
+		low = [float("Inf")] * (self.V)
+		parent = [-1] * (self.V)
+	
+
+		# Call the recursive helper function to find if there is an
+		# articulation points in given graph. We do DFS traversal starting
+		# from vertex 0
+		if self.isBCUtil(0, visited, parent, low, disc):
+			return False
+
+		if any(i == False for i in visited):
+			return False
+		
+		return True
 class Graph_struct:
    def __init__(self, V):
       self.V = V
@@ -226,8 +302,47 @@ for mst in MST2:
     #matrixEXY[mst[0]][mst[1]][0]
     fillRelayNodes2(matrixEXY2[mst[0]][mst[1]][0], matrixEXY2[mst[0]][mst[1]][1])
 
-
-
+#improvement step
+remainRel = relayNodes.copy()
+remainRel2 = relayNodes2.copy()
+def isRemoveNodes(n):
+    Gn = Graph(len(V1)+len(remainRel)+len(remainRel2)-1)
+    removen = remainRel.copy()
+    del removen[n]
+    Vn = V1 + remainRel2 + removen
+    for i in range(len(Vn)-1):
+        for j in range(len(Vn)):
+            if math.dist(Vn[i], Vn[j]) <= rc:
+                Gn.addEdge(i, j)
+    if Gn.isBC():
+        return True
+    else:
+        return False
+def isRemoveNodes2(n):
+    Gn = Graph(len(V1)+len(remainRel)+len(remainRel2)-1)
+    removen = remainRel2.copy()
+    del removen[n]
+    Vn = V1 + remainRel + removen
+    for i in range(len(Vn)-1):
+        for j in range(len(Vn)):
+            if math.dist(Vn[i], Vn[j]) <= rc:
+                Gn.addEdge(i, j)
+    if Gn.isBC():
+        return True
+    else:
+        return False
+ie = 0
+while ie < len(remainRel):
+    if isRemoveNodes(ie):
+        del remainRel[ie]
+    else:
+        ie += 1
+ie2 = 0
+while ie2 < len(remainRel2):
+    if isRemoveNodes2(ie2):
+        del remainRel2[ie2]
+    else:
+        ie2 += 1   
 #ve hinh
 V3x = []
 V3y = []
@@ -241,6 +356,17 @@ relY = []
 for i in range(len(relayNodes)):
     relX.append(relayNodes[i][0])
     relY.append(relayNodes[i][1])
+
+remrelX = []
+remrelY = []
+for i in range(len(remainRel)):
+    remrelX.append(remainRel[i][0])
+    remrelY.append(remainRel[i][1])
+remrelX2 = []
+remrelY2 = []
+for i in range(len(remainRel2)):
+    remrelX2.append(remainRel2[i][0])
+    remrelY2.append(remainRel2[i][1])
 
 relX2 = []
 relY2 = []
@@ -260,18 +386,19 @@ axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1
 axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
 axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,2].plot([5],[5], '^', color = 'red', markersize = 8)
 axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=1), axs[2,1].plot(Sx, Sy, 'o', color = 'black', markersize=1)
-axs[1,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
-axs[0,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
+axs[0,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5)),axs[1,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5)),axs[2,1].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5)),axs[2,2].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
 
 axs[1,1].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
 axs[2,0].plot(V3x, V3y, 'o', color = 'black', markersize=1)
 axs[2,0].plot(relX2, relY2, 'o', color = 'blue', markersize=1),axs[2,1].plot(relX2, relY2, 'o', color = 'blue', markersize=1)
 axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1),axs[2,1].plot(relX, relY, 'o', color = 'green', markersize=1)
 axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
+
 for i in range(len(SSCAT)):
     axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
     axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
     axs[2,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+    axs[2,2].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
 for i in range(len(V3)):
     axs[2,0].add_patch(plt.Circle((V3x[i], V3y[i]), 1, color='orange', alpha = 0.5))
 for i in range(len(V1)-1):
@@ -291,6 +418,10 @@ for i in range(len(MST)):
 for i in range(len(relayNodes)):
     axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
     axs[2,1].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
+for i in range(len(remainRel)):
+    axs[2,2].add_patch(plt.Circle((remrelX[i], remrelY[i]), 1, color='green', alpha = 0.3))
+for i in range(len(remainRel2)):
+    axs[2,2].add_patch(plt.Circle((remrelX2[i], remrelY2[i]), 1, color='blue', alpha = 0.3))
 for i in range(len(relayNodes2)):
     axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
     axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
