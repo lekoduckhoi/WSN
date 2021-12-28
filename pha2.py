@@ -138,8 +138,8 @@ def fillRelayNodes(i,j): #add relay nodes to line V1[i] V1[j]
     b = b/c
     startPoint = [V1[i][0], V1[i][1]]
     while math.dist(startPoint, V1[j]) > rc:
-        relayNodes.append([startPoint[0] + a*0.9, startPoint[1] + b*0.9])
-        startPoint = [startPoint[0] + a*0.9, startPoint[1] + b*0.9]
+        relayNodes.append([startPoint[0] + a*0.9*2, startPoint[1] + b*0.9*2])
+        startPoint = [startPoint[0] + a*0.9*2, startPoint[1] + b*0.9*2]
 for mst in MST:
     #2 components mst[0], mst[1]
     #matrixEXY[mst[0]][mst[1]][0]
@@ -181,7 +181,6 @@ for i in range(len(V3)):
     G3.append(hangi)
 
 conn_comp3 = DFSG3.connected_components()
-print(conn_comp3)
 
 matrixEXY2 = [] 
 for i in range(len(conn_comp3)):
@@ -208,7 +207,26 @@ for i in range(len(conn_comp3)-1):
     for j in range(i+1, len(conn_comp3)):
         G4.add_edge(i,j, matrixEXY2[i][j][2])
 
-MST2 = G2.kruskal_algo()
+MST2 = G4.kruskal_algo()
+
+relayNodes2 = []
+def fillRelayNodes2(i,j): #add relay nodes to line V1[i] V1[j]
+    #vector V1[i] to V[j] = (a,b)
+    a = V3[j][0] - V3[i][0]
+    b = V3[j][1] - V3[i][1]
+    c = math.sqrt(a**2 + b**2)
+    a = a/c
+    b = b/c
+    startPoint = [V3[i][0], V3[i][1]]
+    while math.dist(startPoint, V3[j]) > rc:
+        relayNodes2.append([startPoint[0] + a*0.9*2, startPoint[1] + b*0.9*2])
+        startPoint = [startPoint[0] + a*0.9*2, startPoint[1] + b*0.9*2]
+for mst in MST2:
+    #2 components mst[0], mst[1]
+    #matrixEXY[mst[0]][mst[1]][0]
+    fillRelayNodes2(matrixEXY2[mst[0]][mst[1]][0], matrixEXY2[mst[0]][mst[1]][1])
+
+
 
 #ve hinh
 V3x = []
@@ -224,6 +242,12 @@ for i in range(len(relayNodes)):
     relX.append(relayNodes[i][0])
     relY.append(relayNodes[i][1])
 
+relX2 = []
+relY2 = []
+for i in range(len(relayNodes2)):
+    relX2.append(relayNodes2[i][0])
+    relY2.append(relayNodes2[i][1])
+
 Sx = []
 Sy = []
 for i in range(len(SSCAT)):
@@ -235,17 +259,21 @@ axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1
 axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10),axs[2,0].set_ylim(0,10),axs[2,1].set_ylim(0,10),axs[2,2].set_ylim(0,10)
 axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
 axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,2].plot([5],[5], '^', color = 'red', markersize = 8)
-axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=1)
+axs[0,0].plot(Sx, Sy, 'o', color = 'black', markersize=1),axs[1,0].plot(Sx, Sy, 'o', color = 'black', markersize=1), axs[2,1].plot(Sx, Sy, 'o', color = 'black', markersize=1)
 axs[1,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
 axs[0,0].add_patch(plt.Circle((5, 5), 1, color='orange', alpha = 0.5))
 
 axs[1,1].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
-
-axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1)
+axs[2,0].plot(V3x, V3y, 'o', color = 'black', markersize=1)
+axs[2,0].plot(relX2, relY2, 'o', color = 'blue', markersize=1),axs[2,1].plot(relX2, relY2, 'o', color = 'blue', markersize=1)
+axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1),axs[2,1].plot(relX, relY, 'o', color = 'green', markersize=1)
 axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
 for i in range(len(SSCAT)):
     axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
     axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+    axs[2,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+for i in range(len(V3)):
+    axs[2,0].add_patch(plt.Circle((V3x[i], V3y[i]), 1, color='orange', alpha = 0.5))
 for i in range(len(V1)-1):
     for j in range(i+1, len(V1)):
         if G1[i][j] == 1:
@@ -262,5 +290,13 @@ for i in range(len(MST)):
     axs[0,2].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
 for i in range(len(relayNodes)):
     axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
+    axs[2,1].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
+for i in range(len(relayNodes2)):
+    axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
+    axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
+for i in range(len(MST2)):
+    matrixEXY2[MST2[i][0]][MST2[i][1]][0]
+    matrixEXY2[MST2[i][0]][MST2[i][1]][1]
+    axs[1,2].plot([V3[matrixEXY2[MST2[i][0]][MST2[i][1]][0]][0], V3[matrixEXY2[MST2[i][0]][MST2[i][1]][1]][0],], [V3[matrixEXY2[MST2[i][0]][MST2[i][1]][0]][1], V3[matrixEXY2[MST2[i][0]][MST2[i][1]][1]][1]], color='blue')
 
 plt.show()
