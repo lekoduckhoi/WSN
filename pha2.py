@@ -382,9 +382,6 @@ for i in range(len(SSCAT)):
     Sx.append(SSCAT[i][0])
     Sy.append(SSCAT[i][1])
 
-tarX = pha1.targetsX.copy()
-tarY = pha1.targetsY.copy()
-
 
 fig, axs = plt.subplots(3,3)
 #axs[2,2].plot(tarX, tarY, '*', color = 'red', markersize=7)
