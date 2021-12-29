@@ -87,7 +87,7 @@ def runPha1(_rs, n0targets):
         Sx.append(SSCAT[i][0])
         Sy.append(SSCAT[i][1])
 
-
+    end = time.time()
     fig, axs = plt.subplots(2,2)
     axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10)
     axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10)
@@ -102,10 +102,10 @@ def runPha1(_rs, n0targets):
     for i in range(len(SSCAT)):
         axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='green', alpha = 0.2))
     plt.show()
-    end = time.time()
+    
 
 # total time taken
-    print(f"Runtime of the program is {end - start}")
+    print(f"Runtime of Pha1 is {end - start}")
     print(f"Total Sensing Nodes is {len(SSCAT)}")
     return SSCAT
 SSCAT = runPha1(1, 17)
