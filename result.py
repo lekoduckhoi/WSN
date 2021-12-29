@@ -80,32 +80,12 @@ def runPha1(_rs, n0targets):
             if math.dist(F[maxLfIndex], targets[i]) <= rs +0.0001:
                 for j in range(len(F)):
                     matrix[j][i] = 0
-
-    Sx = []
-    Sy = []
-    for i in range(len(SSCAT)):
-        Sx.append(SSCAT[i][0])
-        Sy.append(SSCAT[i][1])
-
-
-    fig, axs = plt.subplots(2,2)
-    axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10)
-    axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10)
-    axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1)
-    axs[0,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[0,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7)
-
-    axs[1,0].plot(Fx, Fy, 'o', color = 'blue', markersize=rs*2)
-    for i in range(len(targets)):
-        axs[0,1].add_patch(plt.Circle((targetsX[i], targetsY[i]), rs, color='blue', alpha = 0.2))
-        axs[1,0].add_patch(plt.Circle((targetsX[i], targetsY[i]), rs, color='blue', alpha = 0.2))
-    axs[1,1].plot(Sx, Sy, 'o', color = 'black', markersize=2)
-    for i in range(len(SSCAT)):
-        axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='green', alpha = 0.2))
-    plt.show()
     end = time.time()
 
 # total time taken
     print(f"Runtime of the program is {end - start}")
     print(f"Total Sensing Nodes is {len(SSCAT)}")
     return SSCAT
-SSCAT = runPha1(1, 17)
+
+for i in range(20):
+    runPha1(1,17)
