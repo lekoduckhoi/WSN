@@ -343,6 +343,8 @@ while ie2 < len(remainRel2):
         del remainRel2[ie2]
     else:
         ie2 += 1   
+print("Number of Sensor Nodes: ", len(SSCAT))
+print("Number of Relay Nodes: ", len(remainRel)+len(remainRel2))
 #ve hinh
 V3x = []
 V3y = []
@@ -380,7 +382,12 @@ for i in range(len(SSCAT)):
     Sx.append(SSCAT[i][0])
     Sy.append(SSCAT[i][1])
 
+tarX = pha1.targetsX.copy()
+tarY = pha1.targetsY.copy()
+
+
 fig, axs = plt.subplots(3,3)
+#axs[2,2].plot(tarX, tarY, '*', color = 'red', markersize=7)
 axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10),axs[2,0].set_xlim(0,10),axs[2,1].set_xlim(0,10),axs[2,2].set_xlim(0,10)
 axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10),axs[2,0].set_ylim(0,10),axs[2,1].set_ylim(0,10),axs[2,2].set_ylim(0,10)
 axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
@@ -395,12 +402,12 @@ axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1),axs[2,1].plot(relX
 axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
 
 for i in range(len(SSCAT)):
-    axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
-    axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
-    axs[2,1].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
-    axs[2,2].add_patch(plt.Circle((Sx[i], Sy[i]), 1, color='orange', alpha = 0.5))
+    axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))
+    axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))
+    axs[2,1].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))
+    axs[2,2].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))
 for i in range(len(V3)):
-    axs[2,0].add_patch(plt.Circle((V3x[i], V3y[i]), 1, color='orange', alpha = 0.5))
+    axs[2,0].add_patch(plt.Circle((V3x[i], V3y[i]), rc/2, color='orange', alpha = 0.5))
 for i in range(len(V1)-1):
     for j in range(i+1, len(V1)):
         if G1[i][j] == 1:
@@ -416,15 +423,15 @@ for i in range(len(MST)):
     matrixEXY[MST[i][0]][MST[i][1]][1]
     axs[0,2].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
 for i in range(len(relayNodes)):
-    axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
-    axs[2,1].add_patch(plt.Circle((relX[i], relY[i]), 1, color='green', alpha = 0.3))
+    axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), rc/2, color='green', alpha = 0.3))
+    axs[2,1].add_patch(plt.Circle((relX[i], relY[i]), rc/2, color='green', alpha = 0.3))
 for i in range(len(remainRel)):
-    axs[2,2].add_patch(plt.Circle((remrelX[i], remrelY[i]), 1, color='green', alpha = 0.3))
+    axs[2,2].add_patch(plt.Circle((remrelX[i], remrelY[i]), rc/2, color='green', alpha = 0.3))
 for i in range(len(remainRel2)):
-    axs[2,2].add_patch(plt.Circle((remrelX2[i], remrelY2[i]), 1, color='blue', alpha = 0.3))
+    axs[2,2].add_patch(plt.Circle((remrelX2[i], remrelY2[i]), rc/2, color='blue', alpha = 0.3))
 for i in range(len(relayNodes2)):
-    axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
-    axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), 1, color='blue', alpha = 0.3))
+    axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
+    axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
 for i in range(len(MST2)):
     matrixEXY2[MST2[i][0]][MST2[i][1]][0]
     matrixEXY2[MST2[i][0]][MST2[i][1]][1]
