@@ -452,4 +452,4 @@ def runTest(_rs, _rc,_n0targets, _n0test):
     print("4. Average number of Relay Nodes: ", n0r/_n0test)
 
 #runTest(Sensing Radius, Communication Range, Number of Targets, Number of Tests)
-runTest(1,2,17,1000)
+runTest(1,2,17,100)
