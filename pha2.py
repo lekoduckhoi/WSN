@@ -109,10 +109,10 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-def runPha2(_rc): 
+def runPha2(rs): 
     start = time.time()
     SSCAT = pha1.SSCAT.copy()
-    rc = _rc #communication radius
+    rc = rs #communication radius
     V1 = SSCAT.copy()
     V1.append([5,5]) #add base station 
     G1 = []
@@ -218,8 +218,8 @@ def runPha2(_rc):
         b = b/c
         startPoint = [V1[i][0], V1[i][1]]
         while math.dist(startPoint, V1[j]) > rc:
-            relayNodes.append([startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc])
-            startPoint = [startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc]
+            relayNodes.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
+            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
     for mst in MST:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -299,8 +299,8 @@ def runPha2(_rc):
         b = b/c
         startPoint = [V3[i][0], V3[i][1]]
         while math.dist(startPoint, V3[j]) > rc:
-            relayNodes2.append([startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc])
-            startPoint = [startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc]
+            relayNodes2.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
+            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
     for mst in MST2:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -392,6 +392,7 @@ def runPha2(_rc):
     print(f"Runtime of Pha2 is {end - start}")
     fig, axs = plt.subplots(3,3)
     #axs[2,2].plot(tarX, tarY, '*', color = 'red', markersize=7)
+    
     axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10),axs[2,0].set_xlim(0,10),axs[2,1].set_xlim(0,10),axs[2,2].set_xlim(0,10)
     axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10),axs[2,0].set_ylim(0,10),axs[2,1].set_ylim(0,10),axs[2,2].set_ylim(0,10)
     axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
@@ -404,7 +405,7 @@ def runPha2(_rc):
     axs[2,0].plot(relX2, relY2, 'o', color = 'blue', markersize=1),axs[2,1].plot(relX2, relY2, 'o', color = 'blue', markersize=rc/2)
     axs[1,0].plot(relX, relY, 'o', color = 'green', markersize=1),axs[2,1].plot(relX, relY, 'o', color = 'green', markersize=rc/2)
     axs[0,1].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[0,2].plot(Sx, Sy, 'o', color = 'orange', markersize=6, alpha = 0.4)
-
+    
     for i in range(len(SSCAT)):
         axs[0,0].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))
         axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), rc/2, color='orange', alpha = 0.5))

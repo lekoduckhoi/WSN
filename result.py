@@ -194,9 +194,9 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-def runPha2(_rc, SSCAT): 
+def runPha2(rs, SSCAT): 
     start = time.time()
-    rc = _rc #communication radius
+    rc = rs #communication radius
     V1 = SSCAT.copy()
     V1.append([5,5]) #add base station 
     G1 = []
@@ -301,8 +301,8 @@ def runPha2(_rc, SSCAT):
         b = b/c
         startPoint = [V1[i][0], V1[i][1]]
         while math.dist(startPoint, V1[j]) > rc:
-            relayNodes.append([startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc])
-            startPoint = [startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc]
+            relayNodes.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
+            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
     for mst in MST:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -382,8 +382,8 @@ def runPha2(_rc, SSCAT):
         b = b/c
         startPoint = [V3[i][0], V3[i][1]]
         while math.dist(startPoint, V3[j]) > rc:
-            relayNodes2.append([startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc])
-            startPoint = [startPoint[0] + a*0.9*_rc, startPoint[1] + b*0.9*_rc]
+            relayNodes2.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
+            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
     for mst in MST2:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -433,15 +433,15 @@ def runPha2(_rc, SSCAT):
     end = time.time()
     return [len(remainRel)+ len(remainRel2), end - start]
 
-def runTest(_rs, _rc,_n0targets, _n0test):
-    print(f"After {_n0test} tests with {_n0targets} targets, sensing range {_rs} and communication range {_rc} in a 10x10 field, We have: ")
+def runTest(_rs, rs,_n0targets, _n0test):
+    print(f"After {_n0test} tests with {_n0targets} targets, sensing range {_rs} and communication range {rs} in a 10x10 field, We have: ")
     totalTime1 = 0
     totalTime2 = 0
     n0s = 0
     n0r = 0
     for i in range(_n0test):
         res1 = runPha1(_rs, _n0targets)
-        res2 = runPha2(_rc, res1[0])
+        res2 = runPha2(rs, res1[0])
         totalTime1 += res1[1]
         totalTime2 += res2[1]
         n0s += len(res1[0])
