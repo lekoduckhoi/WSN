@@ -1,93 +1,8 @@
 import random
 import math 
 import matplotlib.pyplot as plt
-from collections import defaultdict
 import time
-def runPha1(_rs, n0targets):
-    start = time.time()
-    rs = _rs #sensing radius
-    targetsX = [] #list of targets in X coordinate
-    targetsY = [] #list of targets in X coordinate
-    targets = [] #list of targets 
-    tar = [] #list of targets whose disks do not intersect, denote T' in paper
-    ists = [] #list of intersections between disks
-    F = [] #sensors set
-    for i in range(0,n0targets): #randomly generate 12 targets
-        targetsX.append(random.uniform(1,9))
-        targetsY.append(random.uniform(1,9))
-        targets.append([targetsX[i], targetsY[i]])
-
-    def get_intersections(x0, y0, x1, y1): # get 2 intersections of disks
-        d=math.dist([x0, y0], [x1, y1])
-        a= d/2
-        h=math.sqrt(rs**2-a**2)
-        x2=x0+a*(x1-x0)/d   
-        y2=y0+a*(y1-y0)/d   
-        x3=x2+h*(y1-y0)/d     
-        y3=y2-h*(x1-x0)/d 
-        x4=x2-h*(y1-y0)/d
-        y4=y2+h*(x1-x0)/d
-
-        return ([x3, y3], [x4, y4])
-    hasIntersected = [0]*len(targets)
-
-    for i in range(len(targets)): 
-        for j in range(i+1,len(targets)):
-            if math.dist(targets[i], targets[j]) == 2*rs:
-                ists.append([(targetsX[i] + targetsX[j])/2, (targetsY[i] + targetsY[j])/2])
-                hasIntersected[i] = 1
-                hasIntersected[j] = 1
-            if 0 < math.dist(targets[i], targets[j]) < 2*rs:
-                ists.append(get_intersections(targetsX[i], targetsY[i], targetsX[j], targetsY[j])[0])
-                ists.append(get_intersections(targetsX[i], targetsY[i], targetsX[j], targetsY[j])[1])
-                hasIntersected[i] = 1
-                hasIntersected[j] = 1
-    istsX = []
-    istsY = []
-    for i in range(len(ists)):
-        istsX.append(ists[i][0])
-        istsY.append(ists[i][1])
-    F = ists.copy()
-    Fx = []
-    Fy = []
-    for i in range(len(targets)):
-        if hasIntersected[i] == 0:
-            F.append([targetsX[i], targetsY[i]])
-    for i in range(len(F)):
-        Fx.append(F[i][0])
-        Fy.append(F[i][1])
-
-    #finding SSCAT from F
-    matrix = []
-    SSCAT = []
-    for i in range(len(F)):
-        listCovered = []
-        for j in range(len(targets)):
-            if math.dist(F[i], targets[j]) <= rs +0.0001:
-                listCovered.append(1)
-            else:
-                listCovered.append(0)
-        matrix.append(listCovered)
-    def findMaxLfIndex():
-        Lflist = [0]*len(F)
-        for i in range(len(F)):
-            Lflist[i] = sum(matrix[i])
-        return(Lflist.index(max(Lflist)))
-
-    while sum(sum(matrix,[])) != 0:
-        maxLfIndex = findMaxLfIndex()
-        SSCAT.append(F[maxLfIndex])
-        for i in range(len(targets)):
-            if math.dist(F[maxLfIndex], targets[i]) <= rs +0.0001:
-                for j in range(len(F)):
-                    matrix[j][i] = 0
-    end = time.time()
-
-# total time taken
-    # print(f"Runtime of the program is {end - start}")
-    # print(f"Total Sensing Nodes is {len(SSCAT)}")
-    return [SSCAT, end - start]
-
+from collections import defaultdict
 class Graph:
 	def __init__(self,vertices):
 		self.V= vertices #No. of vertices
@@ -164,78 +79,7 @@ class Graph:
 			return False
 		
 		return True
-class Graph_struct:
-   def __init__(self, V):
-      self.V = V
-      self.adj = [[] for i in range(V)]
-
-   def DFS_Utililty(self, temp, v, visited):
-
-      visited[v] = True
-
-      temp.append(v)
-
-      for i in self.adj[v]:
-         if visited[i] == False:
-            temp = self.DFS_Utililty(temp, i, visited)
-      return temp
-
-   def add_edge(self, v, w):
-      self.adj[v].append(w)
-      self.adj[w].append(v)
-
-   def connected_components(self):
-      visited = []
-      conn_compnent = []
-      for i in range(self.V):
-         visited.append(False)
-      for v in range(self.V):
-         if visited[v] == False:
-            temp = []
-            conn_compnent.append(self.DFS_Utililty(temp, v, visited))
-      return conn_compnent
-def runPha2(rc, SSCAT): 
-    start = time.time()
-    V1 = SSCAT.copy()
-    V1.append([5,5]) #add base station 
-    G1 = []
-    DFSG1 = Graph_struct(len(V1))
-    for i in range(len(V1)):
-        hangi = []
-        for j in range(len(V1)):
-            if math.dist(V1[i], V1[j]) <= rc: 
-                DFSG1.add_edge(i, j)
-                hangi.append(1)
-            else:
-                hangi.append(0)
-        G1.append(hangi)    
-
-
-    conn_comp = DFSG1.connected_components()
-
-    #matrixEXY[i][j] = [a,b, d] => distant between 2 connected component index i and j
-    # is d = distant of point index a in i and b in j
-    matrixEXY = [] 
-    for i in range(len(conn_comp)):
-        hangi = []
-        for j in range(len(conn_comp)):
-            hangicotj = []
-            pointOfi = 0
-            pointOfj = 0
-            min_distance = 100
-            for a in range(len(conn_comp[i])):
-                for b in range(len(conn_comp[j])):
-                    if math.dist(V1[conn_comp[i][a]], V1[conn_comp[j][b]]) <= min_distance:
-                        pointOfi = conn_comp[i][a]
-                        pointOfj = conn_comp[j][b]
-                        min_distance = math.dist(V1[conn_comp[i][a]], V1[conn_comp[j][b]])
-            hangicotj.append(pointOfi)
-            hangicotj.append(pointOfj)
-            hangicotj.append(min_distance)
-            hangi.append(hangicotj)
-        matrixEXY.append(hangi)
-
-    class GraphWeight:
+class GraphWeight:
         def __init__(self, vertices):
             self.V = vertices
             self.graph = []
@@ -281,55 +125,148 @@ def runPha2(rc, SSCAT):
                     result.append([u, v])
                     self.apply_union(parent, rank, x, y)
             return result
+class Graph_struct:
+   def __init__(self, V):
+      self.V = V
+      self.adj = [[] for i in range(V)]
 
+   def DFS_Utililty(self, temp, v, visited):
 
-    G2 = GraphWeight(len(conn_comp))
-    for i in range(len(conn_comp)-1):
-        for j in range(i+1, len(conn_comp)):
-            G2.add_edge(i,j, matrixEXY[i][j][2])
+      visited[v] = True
 
-    MST = G2.kruskal_algo()
+      temp.append(v)
 
+      for i in self.adj[v]:
+         if visited[i] == False:
+            temp = self.DFS_Utililty(temp, i, visited)
+      return temp
+
+   def add_edge(self, v, w):
+      self.adj[v].append(w)
+      self.adj[w].append(v)
+
+   def connected_components(self):
+      visited = []
+      conn_compnent = []
+      for i in range(self.V):
+         visited.append(False)
+      for v in range(self.V):
+         if visited[v] == False:
+            temp = []
+            conn_compnent.append(self.DFS_Utililty(temp, v, visited))
+      return conn_compnent
+def runNewAlgo(_rs,_rc, n0targets):
+    start = time.time()
+    rs = _rs #sensing radius
+    rc = _rc
+    targetsX = [] #list of targets in X coordinate
+    targetsY = [] #list of targets in X coordinate
+    targets = [] #list of targets 
+    tar = [] #list of targets whose disks do not intersect, denote T' in paper
+    for i in range(0,n0targets): #randomly generate 12 targets
+        targetsX.append(random.uniform(1,9))
+        targetsY.append(random.uniform(1,9))
+        targets.append([targetsX[i], targetsY[i]])
+    
+    V1 = targets.copy()
+    V1.append([5,5])
+    G = GraphWeight(len(V1))
+    for i in range(len(V1)-1):
+        for j in range(i+1,len(V1)):
+            G.add_edge(i, j, math.dist(V1[i], V1[j]))
+    MST = G.kruskal_algo()
     relayNodes = []
     def fillRelayNodes(i,j): #add relay nodes to line V1[i] V1[j]
         #vector V1[i] to V[j] = (a,b)
-        a = V1[j][0] - V1[i][0]
-        b = V1[j][1] - V1[i][1]
-        c = math.sqrt(a**2 + b**2)
-        a = a/c
-        b = b/c
-        startPoint = [V1[i][0], V1[i][1]]
-        while math.dist(startPoint, V1[j]) > rc:
-            relayNodes.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
-            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
+        if math.dist(V1[i], V1[j]) < rs*2:
+            relayNodes.append([(V1[j][0] + V1[i][0])/2, (V1[j][1] + V1[i][1])/2])
+        else:
+            a = V1[j][0] - V1[i][0]
+            b = V1[j][1] - V1[i][1]
+            c = math.sqrt(a**2 + b**2)
+            a = a/c
+            b = b/c
+            startPoint = [V1[i][0], V1[i][1]]
+            while math.dist(startPoint, V1[j]) > rs:
+                relayNodes.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
+                startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
     for mst in MST:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
-        fillRelayNodes(matrixEXY[mst[0]][mst[1]][0], matrixEXY[mst[0]][mst[1]][1])
+        fillRelayNodes(mst[0], mst[1])
+    
+    V2 = relayNodes.copy()
+    #finding SSCAT from F
+    matrixCover = []
+    SSCAT = []
+    for i in range(len(V2)):
+        listCovered = []
+        for j in range(len(targets)):
+            if math.dist(V2[i], targets[j]) <= rs +0.0001:
+                listCovered.append(1)
+            else:
+                listCovered.append(0)
+        matrixCover.append(listCovered)
+    def findMaxLfIndex():
+        Lflist = [0]*len(V2)
+        for i in range(len(V2)):
+            Lflist[i] = sum(matrixCover[i])
+        return(Lflist.index(max(Lflist)))
 
-    #phan 2 Ensuring fault-tolerance:
+    while sum(sum(matrixCover,[])) != 0:
+        maxLfIndex = findMaxLfIndex()
+        SSCAT.append(V2[maxLfIndex])
+        for i in range(len(targets)):
+            if math.dist(V2[maxLfIndex], targets[i]) <= rs +0.0001:
+                for j in range(len(V2)):
+                    matrixCover[j][i] = 0
+    rrl = V2.copy()
+    for sscat in SSCAT:
+        rrl.remove(sscat)
 
-    V2 = V1.copy()
-    for i in range(len(relayNodes)):
-        V2.append(relayNodes[i])
-
+    # V2 là tập các relaynodes và sensor nodes
+    rrl2 = rrl.copy()
+    def isRemove(n):
+        _V = rrl2 + SSCAT
+        _V.append([5,5])
+        _V.remove(rrl2[n])
+        G3 = Graph_struct(len(_V))
+        for i in range(len(_V)-1):
+            for j in range(i+1, len(_V)):
+                if math.dist(_V[i],_V[j]) <= rc:
+                    G3.add_edge(i, j)
+        cc = len(G3.connected_components())
+        if cc == 1:
+            return True
+        else:
+            return False
+    
+    iee = 0
+    while iee < len(rrl2):
+        if isRemove(iee):
+            del rrl2[iee]
+        else:
+            iee += 1
+        
+    VV = SSCAT + rrl2 + [[5,5]]
     def isCutVertex(index):
-        V2_temp = V2.copy()
-        del V2_temp[index]
-        GG = Graph_struct(len(V2_temp))
-        for i in range(len(V2_temp)-1):
-            for j in range(i+1, len(V2_temp)):
-                if math.dist(V2_temp[i], V2_temp[j]) <= rc:
+        V3_temp = VV.copy()
+        del V3_temp[index]
+        GG = Graph_struct(len(V3_temp))
+        for i in range(len(V3_temp)-1):
+            for j in range(i+1, len(V3_temp)):
+                if math.dist(V3_temp[i], V3_temp[j]) <= rc:
                     GG.add_edge(i,j)
-        conn_comp1 = GG.connected_components()
-        if len(conn_comp1) == 1:
+        cc1 = GG.connected_components()
+        if len(cc1) == 1:
             return False
         else:
             return True
     V3 = []
-    for i in range(len(V2)):
+    for i in range(len(VV)):
         if isCutVertex(i) == False:
-            V3.append(V2[i])
+            V3.append(VV[i])
+    
     G3=[]
     DFSG3 = Graph_struct(len(V3))
     for i in range(len(V3)):
@@ -388,14 +325,14 @@ def runPha2(rc, SSCAT):
         #matrixEXY[mst[0]][mst[1]][0]
         fillRelayNodes2(matrixEXY2[mst[0]][mst[1]][0], matrixEXY2[mst[0]][mst[1]][1])
 
-    #improvement step
+    VT = SSCAT + [[5,5]]
     remainRel = relayNodes.copy()
     remainRel2 = relayNodes2.copy()
     def isRemoveNodes(n):
-        Gn = Graph(len(V1)+len(remainRel)+len(remainRel2)-1)
+        Gn = Graph(len(VT)+len(remainRel)+len(remainRel2)-1)
         removen = remainRel.copy()
         del removen[n]
-        Vn = V1 + remainRel2 + removen
+        Vn = VT + remainRel2 + removen
         for i in range(len(Vn)-1):
             for j in range(len(Vn)):
                 if math.dist(Vn[i], Vn[j]) <= rc:
@@ -405,10 +342,10 @@ def runPha2(rc, SSCAT):
         else:
             return False
     def isRemoveNodes2(n):
-        Gn = Graph(len(V1)+len(remainRel)+len(remainRel2)-1)
+        Gn = Graph(len(VT)+len(remainRel)+len(remainRel2)-1)
         removen = remainRel2.copy()
         del removen[n]
-        Vn = V1 + remainRel + removen
+        Vn = VT + remainRel + removen
         for i in range(len(Vn)-1):
             for j in range(len(Vn)):
                 if math.dist(Vn[i], Vn[j]) <= rc:
@@ -429,25 +366,28 @@ def runPha2(rc, SSCAT):
             del remainRel2[ie2]
         else:
             ie2 += 1   
-    end = time.time()
-    return [len(remainRel)+ len(remainRel2), end - start]
 
-def runTest(_rs, _rc,_n0targets, _n0test):
-    print(f"With old Algorithm, after {_n0test} tests with {_n0targets} targets, sensing range {_rs} and communication range {_rc} in a 10x10 field, We have: ")
-    totalTime1 = 0
-    totalTime2 = 0
+    end = time.time()
+    
+    
+    # print(f"Runtime is {end - start}")
+    # print(f"Total Sensing Nodes is {len(SSCAT)}")
+    return [SSCAT, remainRel, remainRel2, end - start]
+#runNewAlgo(sensing radius, communication range, number of targets)
+runNewAlgo(0.5,1.5, 17)
+def runTestNewAlgo(_rs, _rc,_n0targets, _n0test):
+    print(f"With new Algorithm, after {_n0test} tests with {_n0targets} targets, sensing range {_rs} and communication range {_rc} in a 10x10 field, We have: ")
+    totalTime = 0
     n0s = 0
     n0r = 0
     for i in range(_n0test):
-        res1 = runPha1(_rs, _n0targets)
-        res2 = runPha2(_rc, res1[0])
-        totalTime1 += res1[1]
-        totalTime2 += res2[1]
-        n0s += len(res1[0])
-        n0r += res2[0]
-    print("1. Average runtime: ", (totalTime1+totalTime2)/_n0test)
+        res = runNewAlgo(_rs, _rc, _n0targets)
+        totalTime += res[3]
+        n0s += len(res[0])
+        n0r += (len(res[1])+len(res[2]))
+    print("1. Average runtime: ", totalTime/_n0test)
     print("2. Average number of Sensors Nodes: ", n0s/_n0test)
     print("3. Average number of Relay Nodes: ", n0r/_n0test)
 
 #runTest(Sensing Radius, Communication Range, Number of Targets, Number of Tests)
-runTest(1,2,100,100)
+runTestNewAlgo(1,2,100,100)

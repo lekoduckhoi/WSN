@@ -74,7 +74,6 @@ def runNewAlgo(_rs, n0targets):
 
     # V2 là tập các relaynodes và sensor nodes
     rrl2 = rrl.copy()
-    print(len(V2))
     def isRemove(n):
         _V = rrl2 + SSCAT
         _V.append([5,5])
@@ -218,21 +217,31 @@ def runNewAlgo(_rs, n0targets):
 
     end = time.time()
     #vehinh
+    remrelX = []
+    remrelY = []
+    for i in range(len(remainRel)):
+        remrelX.append(remainRel[i][0])
+        remrelY.append(remainRel[i][1])
+    remrelX2 = []
+    remrelY2 = []
+    for i in range(len(remainRel2)):
+        remrelX2.append(remainRel2[i][0])
+        remrelY2.append(remainRel2[i][1])
     relX2 = []
     relY2 = []
     for i in range(len(relayNodes2)):
         relX2.append(relayNodes2[i][0])
         relY2.append(relayNodes2[i][1])
-    remrelX = []
-    remrelY = []
+    _rrlX = []
+    _rrlY = []
     for i in range(len(rrl)):
-        remrelX.append(rrl[i][0])
-        remrelY.append(rrl[i][1])
-    remrel2X = []
-    remrel2Y = []
+        _rrlX.append(rrl[i][0])
+        _rrlY.append(rrl[i][1])
+    _rrl2X = []
+    _rrl2Y = []
     for i in range(len(rrl2)):
-        remrel2X.append(rrl2[i][0])
-        remrel2Y.append(rrl2[i][1])
+        _rrl2X.append(rrl2[i][0])
+        _rrl2Y.append(rrl2[i][1])
     Sx = []
     Sy = []
     for i in range(len(SSCAT)):
@@ -262,10 +271,10 @@ def runNewAlgo(_rs, n0targets):
     for i in range(len(relayNodes)):
         axs[0,2].add_patch(plt.Circle((relX[i], relY[i]), rs, color='green', alpha = 0.3))
     for i in range(len(rrl)):
-        axs[1,0].add_patch(plt.Circle((remrelX[i], remrelY[i]), rs, color='green', alpha = 0.3))
+        axs[1,0].add_patch(plt.Circle((_rrlX[i], _rrlY[i]), rs, color='green', alpha = 0.3))
     for i in range(len(rrl2)):
-        axs[1,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
-        axs[2,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
+        axs[1,1].add_patch(plt.Circle((_rrl2X[i], _rrl2Y[i]), rs, color='green', alpha = 0.3))
+        axs[2,1].add_patch(plt.Circle((_rrl2X[i], _rrl2Y[i]), rs, color='green', alpha = 0.3))
     for i in range(len(SSCAT)):
         axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
         axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
@@ -283,6 +292,10 @@ def runNewAlgo(_rs, n0targets):
     for i in range(len(relayNodes2)):
         axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
         axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
+    for i in range(len(remainRel)):
+        axs[2,2].add_patch(plt.Circle((remrelX[i], remrelY[i]), rc/2, color='green', alpha = 0.3))
+    for i in range(len(remainRel2)):
+        axs[2,2].add_patch(plt.Circle((remrelX2[i], remrelY2[i]), rc/2, color='blue', alpha = 0.3))
     plt.show()
     
     print(f"Runtime is {end - start}")
@@ -440,4 +453,4 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-SSCAT = runNewAlgo(1, 17)
+runNewAlgo(1, 17)
