@@ -197,6 +197,7 @@ def runPha2(_rc):
                     e = e + 1
                     result.append([u, v])
                     self.apply_union(parent, rank, x, y)
+            print(result)
             return result
 
 
@@ -422,8 +423,6 @@ def runPha2(_rc):
                 axs[1,1].plot([V3[i][0], V3[j][0],], [V3[i][1], V3[j][1]], color='purple')
                 axs[1,2].plot([V3[i][0], V3[j][0],], [V3[i][1], V3[j][1]], color='purple')    
     for i in range(len(MST)):
-        matrixEXY[MST[i][0]][MST[i][1]][0]
-        matrixEXY[MST[i][0]][MST[i][1]][1]
         axs[0,2].plot([V1[matrixEXY[MST[i][0]][MST[i][1]][0]][0], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][0],], [V1[matrixEXY[MST[i][0]][MST[i][1]][0]][1], V1[matrixEXY[MST[i][0]][MST[i][1]][1]][1]], color='green')
     for i in range(len(relayNodes)):
         axs[1,0].add_patch(plt.Circle((relX[i], relY[i]), rc/2, color='green', alpha = 0.3))
@@ -443,4 +442,4 @@ def runPha2(_rc):
     plt.show()
 
 
-runPha2(2)
+runPha2(1)
