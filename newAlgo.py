@@ -2,6 +2,7 @@ import random
 import math 
 import matplotlib.pyplot as plt
 import time
+from collections import defaultdict
 def runNewAlgo(_rs, n0targets):
     start = time.time()
     rs = _rs #sensing radius
@@ -67,17 +68,17 @@ def runNewAlgo(_rs, n0targets):
             if math.dist(V2[maxLfIndex], targets[i]) <= rs +0.0001:
                 for j in range(len(V2)):
                     matrixCover[j][i] = 0
-    remainRel = V2.copy()
+    rrl = V2.copy()
     for sscat in SSCAT:
-        remainRel.remove(sscat)
+        rrl.remove(sscat)
 
     # V2 là tập các relaynodes và sensor nodes
-    remainRel2 = remainRel.copy()
+    rrl2 = rrl.copy()
     print(len(V2))
     def isRemove(n):
-        _V = remainRel2 + SSCAT
+        _V = rrl2 + SSCAT
         _V.append([5,5])
-        _V.remove(remainRel2[n])
+        _V.remove(rrl2[n])
         G3 = Graph_struct(len(_V))
         for i in range(len(_V)-1):
             for j in range(i+1, len(_V)):
@@ -89,14 +90,14 @@ def runNewAlgo(_rs, n0targets):
         else:
             return False
     
-    ie = 0
-    while ie < len(remainRel2):
-        if isRemove(ie):
-            del remainRel2[ie]
+    iee = 0
+    while iee < len(rrl2):
+        if isRemove(iee):
+            del rrl2[iee]
         else:
-            ie += 1
+            iee += 1
         
-    VV = SSCAT + remainRel2 + [[5,5]]
+    VV = SSCAT + rrl2 + [[5,5]]
     def isCutVertex(index):
         V3_temp = VV.copy()
         del V3_temp[index]
@@ -173,6 +174,47 @@ def runNewAlgo(_rs, n0targets):
         #matrixEXY[mst[0]][mst[1]][0]
         fillRelayNodes2(matrixEXY2[mst[0]][mst[1]][0], matrixEXY2[mst[0]][mst[1]][1])
 
+    VT = SSCAT + [[5,5]]
+    remainRel = relayNodes.copy()
+    remainRel2 = relayNodes2.copy()
+    def isRemoveNodes(n):
+        Gn = Graph(len(VT)+len(remainRel)+len(remainRel2)-1)
+        removen = remainRel.copy()
+        del removen[n]
+        Vn = VT + remainRel2 + removen
+        for i in range(len(Vn)-1):
+            for j in range(len(Vn)):
+                if math.dist(Vn[i], Vn[j]) <= rc:
+                    Gn.addEdge(i, j)
+        if Gn.isBC():
+            return True
+        else:
+            return False
+    def isRemoveNodes2(n):
+        Gn = Graph(len(VT)+len(remainRel)+len(remainRel2)-1)
+        removen = remainRel2.copy()
+        del removen[n]
+        Vn = VT + remainRel + removen
+        for i in range(len(Vn)-1):
+            for j in range(len(Vn)):
+                if math.dist(Vn[i], Vn[j]) <= rc:
+                    Gn.addEdge(i, j)
+        if Gn.isBC():
+            return True
+        else:
+            return False
+    ie = 0
+    while ie < len(remainRel):
+        if isRemoveNodes(ie):
+            del remainRel[ie]
+        else:
+            ie += 1
+    ie2 = 0
+    while ie2 < len(remainRel2):
+        if isRemoveNodes2(ie2):
+            del remainRel2[ie2]
+        else:
+            ie2 += 1   
 
     end = time.time()
     #vehinh
@@ -183,14 +225,14 @@ def runNewAlgo(_rs, n0targets):
         relY2.append(relayNodes2[i][1])
     remrelX = []
     remrelY = []
-    for i in range(len(remainRel)):
-        remrelX.append(remainRel[i][0])
-        remrelY.append(remainRel[i][1])
+    for i in range(len(rrl)):
+        remrelX.append(rrl[i][0])
+        remrelY.append(rrl[i][1])
     remrel2X = []
     remrel2Y = []
-    for i in range(len(remainRel2)):
-        remrel2X.append(remainRel2[i][0])
-        remrel2Y.append(remainRel2[i][1])
+    for i in range(len(rrl2)):
+        remrel2X.append(rrl2[i][0])
+        remrel2Y.append(rrl2[i][1])
     Sx = []
     Sy = []
     for i in range(len(SSCAT)):
@@ -214,14 +256,14 @@ def runNewAlgo(_rs, n0targets):
     axs[0,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[0,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7)
     axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,2].plot([5],[5], '^', color = 'red', markersize = 8)
     axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
-    axs[1,0].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[1,1].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[2,1].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[2,2].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3))
+    axs[1,0].add_patch(plt.Circle((5, 5), rc/2, color='orange', alpha = 0.3)),axs[1,1].add_patch(plt.Circle((5, 5), rc/2, color='orange', alpha = 0.3)),axs[2,1].add_patch(plt.Circle((5, 5), rc/2, color='orange', alpha = 0.3)),axs[2,2].add_patch(plt.Circle((5, 5), rc/2, color='orange', alpha = 0.3))
     for mst in MST:
         axs[0,1].plot([V1[mst[0]][0], V1[mst[1]][0]],[V1[mst[0]][1], V1[mst[1]][1]], color='green')
     for i in range(len(relayNodes)):
         axs[0,2].add_patch(plt.Circle((relX[i], relY[i]), rs, color='green', alpha = 0.3))
-    for i in range(len(remainRel)):
+    for i in range(len(rrl)):
         axs[1,0].add_patch(plt.Circle((remrelX[i], remrelY[i]), rs, color='green', alpha = 0.3))
-    for i in range(len(remainRel2)):
+    for i in range(len(rrl2)):
         axs[1,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
         axs[2,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
     for i in range(len(SSCAT)):
@@ -246,7 +288,82 @@ def runNewAlgo(_rs, n0targets):
     print(f"Runtime is {end - start}")
     print(f"Total Sensing Nodes is {len(SSCAT)}")
     return SSCAT
+class Graph:
+	def __init__(self,vertices):
+		self.V= vertices #No. of vertices
+		self.graph = defaultdict(list) # default dictionary to store graph
+		self.Time = 0
 
+	# function to add an edge to graph
+	def addEdge(self,u,v):
+		self.graph[u].append(v)
+		self.graph[v].append(u)
+
+	def isBCUtil(self,u, visited, parent, low, disc):
+
+		#Count of children in current node
+		children =0
+
+		# Mark the current node as visited and print it
+		visited[u]= True
+
+		# Initialize discovery time and low value
+		disc[u] = self.Time
+		low[u] = self.Time
+		self.Time += 1
+
+		#Recur for all the vertices adjacent to this vertex
+		for v in self.graph[u]:
+			# If v is not visited yet, then make it a child of u
+			# in DFS tree and recur for it
+			if visited[v] == False :
+				parent[v] = u
+				children += 1
+				if self.isBCUtil(v, visited, parent, low, disc):
+					return True
+
+				# Check if the subtree rooted with v has a connection to
+				# one of the ancestors of u
+				low[u] = min(low[u], low[v])
+
+				# u is an articulation point in following cases
+				# (1) u is root of DFS tree and has two or more children.
+				if parent[u] == -1 and children > 1:
+					return True
+
+				#(2) If u is not root and low value of one of its child is more
+				# than discovery value of u.
+				if parent[u] != -1 and low[v] >= disc[u]:
+					return True
+					
+			elif v != parent[u]: # Update low value of u for parent function calls.
+				low[u] = min(low[u], disc[v])
+
+		return False
+
+
+	# The main function that returns true if graph is Biconnected,
+	# otherwise false. It uses recursive function isBCUtil()
+	def isBC(self):
+
+		# Mark all the vertices as not visited and Initialize parent and visited,
+		# and ap(articulation point) arrays
+		visited = [False] * (self.V)
+		disc = [float("Inf")] * (self.V)
+		low = [float("Inf")] * (self.V)
+		parent = [-1] * (self.V)
+	
+
+		# Call the recursive helper function to find if there is an
+		# articulation points in given graph. We do DFS traversal starting
+		# from vertex 0
+		if self.isBCUtil(0, visited, parent, low, disc):
+			return False
+
+		if any(i == False for i in visited):
+			return False
+		
+		return True
 class GraphWeight:
         def __init__(self, vertices):
             self.V = vertices
