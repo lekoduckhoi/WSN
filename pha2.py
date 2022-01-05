@@ -109,10 +109,10 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-def runPha2(rs): 
+def runPha2(_rc): 
     start = time.time()
     SSCAT = pha1.SSCAT.copy()
-    rc = rs #communication radius
+    rc = _rc #communication radius
     V1 = SSCAT.copy()
     V1.append([5,5]) #add base station 
     G1 = []
@@ -197,7 +197,6 @@ def runPha2(rs):
                     e = e + 1
                     result.append([u, v])
                     self.apply_union(parent, rank, x, y)
-            print(result)
             return result
 
 
@@ -218,13 +217,12 @@ def runPha2(rs):
         b = b/c
         startPoint = [V1[i][0], V1[i][1]]
         while math.dist(startPoint, V1[j]) > rc:
-            relayNodes.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
-            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
+            relayNodes.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
+            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
     for mst in MST:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
         fillRelayNodes(matrixEXY[mst[0]][mst[1]][0], matrixEXY[mst[0]][mst[1]][1])
-
     #phan 2 Ensuring fault-tolerance:
 
     V2 = V1.copy()
@@ -299,8 +297,8 @@ def runPha2(rs):
         b = b/c
         startPoint = [V3[i][0], V3[i][1]]
         while math.dist(startPoint, V3[j]) > rc:
-            relayNodes2.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
-            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
+            relayNodes2.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
+            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
     for mst in MST2:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -443,4 +441,4 @@ def runPha2(rs):
     plt.show()
 
 
-runPha2(1)
+runPha2(2)

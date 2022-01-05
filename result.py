@@ -194,9 +194,8 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-def runPha2(rs, SSCAT): 
+def runPha2(rc, SSCAT): 
     start = time.time()
-    rc = rs #communication radius
     V1 = SSCAT.copy()
     V1.append([5,5]) #add base station 
     G1 = []
@@ -301,8 +300,8 @@ def runPha2(rs, SSCAT):
         b = b/c
         startPoint = [V1[i][0], V1[i][1]]
         while math.dist(startPoint, V1[j]) > rc:
-            relayNodes.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
-            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
+            relayNodes.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
+            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
     for mst in MST:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]
@@ -382,8 +381,8 @@ def runPha2(rs, SSCAT):
         b = b/c
         startPoint = [V3[i][0], V3[i][1]]
         while math.dist(startPoint, V3[j]) > rc:
-            relayNodes2.append([startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs])
-            startPoint = [startPoint[0] + a*0.9*rs, startPoint[1] + b*0.9*rs]
+            relayNodes2.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
+            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
     for mst in MST2:
         #2 components mst[0], mst[1]
         #matrixEXY[mst[0]][mst[1]][0]

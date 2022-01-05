@@ -75,13 +75,13 @@ def runNewAlgo(_rs, n0targets):
     remainRel2 = remainRel.copy()
     print(len(V2))
     def isRemove(n):
-        V3 = remainRel2 + SSCAT
-        V3.append([5,5])
-        V3.remove(remainRel2[n])
-        G3 = Graph_struct(len(V3))
-        for i in range(len(V3)-1):
-            for j in range(i+1, len(V3)):
-                if math.dist(V3[i],V3[j]) <= rc:
+        _V = remainRel2 + SSCAT
+        _V.append([5,5])
+        _V.remove(remainRel2[n])
+        G3 = Graph_struct(len(_V))
+        for i in range(len(_V)-1):
+            for j in range(i+1, len(_V)):
+                if math.dist(_V[i],_V[j]) <= rc:
                     G3.add_edge(i, j)
         cc = len(G3.connected_components())
         if cc == 1:
@@ -95,11 +95,92 @@ def runNewAlgo(_rs, n0targets):
             del remainRel2[ie]
         else:
             ie += 1
-            
+        
+    VV = SSCAT + remainRel2 + [[5,5]]
+    def isCutVertex(index):
+        V3_temp = VV.copy()
+        del V3_temp[index]
+        GG = Graph_struct(len(V3_temp))
+        for i in range(len(V3_temp)-1):
+            for j in range(i+1, len(V3_temp)):
+                if math.dist(V3_temp[i], V3_temp[j]) <= rc:
+                    GG.add_edge(i,j)
+        cc1 = GG.connected_components()
+        if len(cc1) == 1:
+            return False
+        else:
+            return True
+    V3 = []
+    for i in range(len(VV)):
+        if isCutVertex(i) == False:
+            V3.append(VV[i])
+    
+    G3=[]
+    DFSG3 = Graph_struct(len(V3))
+    for i in range(len(V3)):
+        hangi = []
+        for j in range(len(V3)):
+            if math.dist(V3[i], V3[j]) <= rc:
+                DFSG3.add_edge(i, j)
+                hangi.append(1)
+            else:
+                hangi.append(0)
+        G3.append(hangi)
+
+    conn_comp3 = DFSG3.connected_components()
+
+    matrixEXY2 = [] 
+    for i in range(len(conn_comp3)):
+        hangi = []
+        for j in range(len(conn_comp3)):
+            hangicotj = []
+            pointOfi = 0
+            pointOfj = 0
+            min_distance = 100
+            for a in range(len(conn_comp3[i])):
+                for b in range(len(conn_comp3[j])):
+                    if math.dist(V3[conn_comp3[i][a]], V3[conn_comp3[j][b]]) <= min_distance:
+                        pointOfi = conn_comp3[i][a]
+                        pointOfj = conn_comp3[j][b]
+                        min_distance = math.dist(V3[conn_comp3[i][a]], V3[conn_comp3[j][b]])
+            hangicotj.append(pointOfi)
+            hangicotj.append(pointOfj)
+            hangicotj.append(min_distance)
+            hangi.append(hangicotj)
+        matrixEXY2.append(hangi)
+
+    G4 = GraphWeight(len(conn_comp3))
+    for i in range(len(conn_comp3)-1):
+        for j in range(i+1, len(conn_comp3)):
+            G4.add_edge(i,j, matrixEXY2[i][j][2])
+
+    MST2 = G4.kruskal_algo()
+
+    relayNodes2 = []
+    def fillRelayNodes2(i,j): #add relay nodes to line V1[i] V1[j]
+        #vector V1[i] to V[j] = (a,b)
+        a = V3[j][0] - V3[i][0]
+        b = V3[j][1] - V3[i][1]
+        c = math.sqrt(a**2 + b**2)
+        a = a/c
+        b = b/c
+        startPoint = [V3[i][0], V3[i][1]]
+        while math.dist(startPoint, V3[j]) > rc:
+            relayNodes2.append([startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc])
+            startPoint = [startPoint[0] + a*0.9*rc, startPoint[1] + b*0.9*rc]
+    for mst in MST2:
+        #2 components mst[0], mst[1]
+        #matrixEXY[mst[0]][mst[1]][0]
+        fillRelayNodes2(matrixEXY2[mst[0]][mst[1]][0], matrixEXY2[mst[0]][mst[1]][1])
 
 
     end = time.time()
     #vehinh
+    relX2 = []
+    relY2 = []
+    for i in range(len(relayNodes2)):
+        relX2.append(relayNodes2[i][0])
+        relY2.append(relayNodes2[i][1])
     remrelX = []
     remrelY = []
     for i in range(len(remainRel)):
@@ -120,20 +201,20 @@ def runNewAlgo(_rs, n0targets):
     for i in range(len(relayNodes)):
         relX.append(relayNodes[i][0])
         relY.append(relayNodes[i][1])
-    # V3x = []
-    # V3y = []
-    # for i in range(len(V3)):
-    #     V3x.append(V3[i][0])
-    #     V3y.append(V3[i][1])
+    V3x = []
+    V3y = []
+    for i in range(len(V3)):
+        V3x.append(V3[i][0])
+        V3y.append(V3[i][1])
     
     fig, axs = plt.subplots(3,3)
     axs[0,0].set_xlim(0,10), axs[0,1].set_xlim(0,10), axs[1,0].set_xlim(0,10), axs[1,1].set_xlim(0,10),axs[0,2].set_xlim(0,10),axs[1,2].set_xlim(0,10),axs[2,0].set_xlim(0,10),axs[2,1].set_xlim(0,10),axs[2,2].set_xlim(0,10)
     axs[0,0].set_ylim(0,10), axs[0,1].set_ylim(0,10), axs[1,0].set_ylim(0,10), axs[1,1].set_ylim(0,10),axs[0,2].set_ylim(0,10),axs[1,2].set_ylim(0,10),axs[2,0].set_ylim(0,10),axs[2,1].set_ylim(0,10),axs[2,2].set_ylim(0,10)
     axs[0,0].set_box_aspect(1), axs[0,1].set_box_aspect(1), axs[1,0].set_box_aspect(1), axs[1,1].set_box_aspect(1),axs[0,2].set_box_aspect(1),axs[1,2].set_box_aspect(1),axs[2,0].set_box_aspect(1),axs[2,1].set_box_aspect(1),axs[2,2].set_box_aspect(1)
-    axs[0,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[0,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[2,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[2,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[0,2].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,2].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[2,2].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7)
+    axs[0,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[0,1].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7),axs[1,0].plot(targetsX, targetsY, '*', color = 'red', markersize=rs*7)
     axs[0,0].plot([5],[5], '^', color = 'red', markersize = 8), axs[0,1].plot([5],[5], '^', color = 'red', markersize = 8), axs[1,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[0,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[1,2].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,0].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,1].plot([5],[5], '^', color = 'red', markersize = 8),axs[2,2].plot([5],[5], '^', color = 'red', markersize = 8)
-    #axs[1,1].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4),axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
-    axs[1,0].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[1,1].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3))
+    axs[1,2].plot(V3x, V3y, 'o', color = 'orange', markersize=6, alpha = 0.4)
+    axs[1,0].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[1,1].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[2,1].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3)),axs[2,2].add_patch(plt.Circle((5, 5), rc/2, color='green', alpha = 0.3))
     for mst in MST:
         axs[0,1].plot([V1[mst[0]][0], V1[mst[1]][0]],[V1[mst[0]][1], V1[mst[1]][1]], color='green')
     for i in range(len(relayNodes)):
@@ -142,12 +223,27 @@ def runNewAlgo(_rs, n0targets):
         axs[1,0].add_patch(plt.Circle((remrelX[i], remrelY[i]), rs, color='green', alpha = 0.3))
     for i in range(len(remainRel2)):
         axs[1,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
+        axs[2,1].add_patch(plt.Circle((remrel2X[i], remrel2Y[i]), rs, color='green', alpha = 0.3))
     for i in range(len(SSCAT)):
         axs[1,0].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
         axs[1,1].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
+        axs[2,0].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
+        axs[2,1].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
+        axs[2,2].add_patch(plt.Circle((Sx[i], Sy[i]), rs, color='orange', alpha = 0.5))
+    for i in range(len(MST2)):
+        matrixEXY2[MST2[i][0]][MST2[i][1]][0]
+        matrixEXY2[MST2[i][0]][MST2[i][1]][1]
+        axs[1,2].plot([V3[matrixEXY2[MST2[i][0]][MST2[i][1]][0]][0], V3[matrixEXY2[MST2[i][0]][MST2[i][1]][1]][0],], [V3[matrixEXY2[MST2[i][0]][MST2[i][1]][0]][1], V3[matrixEXY2[MST2[i][0]][MST2[i][1]][1]][1]], color='blue')
+    for i in range(len(V3)-1):
+        for j in range(i+1, len(V3)):
+            if G3[i][j] == 1:
+                axs[1,2].plot([V3[i][0], V3[j][0],], [V3[i][1], V3[j][1]], color='purple')    
+    for i in range(len(relayNodes2)):
+        axs[2,0].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
+        axs[2,1].add_patch(plt.Circle((relX2[i], relY2[i]), rc/2, color='blue', alpha = 0.3))
     plt.show()
     
-    print(f"Runtime of Pha1 is {end - start}")
+    print(f"Runtime is {end - start}")
     print(f"Total Sensing Nodes is {len(SSCAT)}")
     return SSCAT
 
@@ -227,4 +323,4 @@ class Graph_struct:
             temp = []
             conn_compnent.append(self.DFS_Utililty(temp, v, visited))
       return conn_compnent
-SSCAT = runNewAlgo(1, 30)
+SSCAT = runNewAlgo(1, 17)

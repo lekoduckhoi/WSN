@@ -1,19 +1,19 @@
-def isRemoveNodes2(n):
-        Gn = Graph(len(V1)+len(remainRel)+len(remainRel2)-1)
-        removen = remainRel2.copy()
-        del removen[n]
-        Vn = V1 + remainRel + removen
-        for i in range(len(Vn)-1):
-            for j in range(len(Vn)):
-                if math.dist(Vn[i], Vn[j]) <= rc:
-                    Gn.addEdge(i, j)
-        if Gn.isBC():
-            return True
-        else:
+def isCutVertex(index):
+        V3_temp = V3.copy()
+        del V3_temp[index]
+        GG = Graph_struct(len(V3_temp))
+        for i in range(len(V3_temp)-1):
+            for j in range(i+1, len(V3_temp)):
+                if math.dist(V3_temp[i], V3_temp[j]) <= rc:
+                    GG.add_edge(i,j)
+        cc1 = GG.connected_components()
+        if len(cc1) == 1:
             return False
-    ie = 0
-    while ie < len(remainRel):
-        if isRemoveNodes(ie):
-            del remainRel[ie]
         else:
-            ie += 1
+            return True
+    V4 = []
+    for i in range(len(V3)):
+        if isCutVertex(i) == False:
+            V4.append(V3[i])
+    print(len(V3))
+    print(len(V4))
